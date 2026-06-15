@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 /**
- * Auto-refresh balance cache. Queries configured APIs and updates
- * session_state.json without adding history entries.
+ * Balance HUD v1.1 — Background refresh daemon.
  *
- * Usage: node auto_refresh.mjs [interval_seconds]
- *   Default interval: 15 seconds
+ * Queries DeepSeek API every N seconds and writes last_balance/last_check
+ * to session_state.json for the HUD renderer (hud_balance.mjs) to read.
+ * No history entries — this is cache-only refresh.
+ *
+ * PID singleton lock prevents duplicate instances across sessions.
+ * On startup, resets session state so consumption starts from zero.
+ *
+ * Usage:
+ *   node auto_refresh.mjs [seconds]   Start daemon (default 15s)
+ *   node auto_refresh.mjs --warn N    Set low-balance warning threshold (default ¥5)
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync } from 'fs';
@@ -12,10 +19,29 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SKILL_DIR = resolve(__dirname, '..');
-const STATE_FILE = resolve(SKILL_DIR, 'session_state.json');
-const PID_FILE = resolve(SKILL_DIR, '.auto_refresh_pid');
-const INTERVAL_MS = (parseInt(process.argv[2], 10) || 15) * 1000;
+const PLUGIN_DIR = resolve(__dirname, '..');
+const STATE_FILE = resolve(PLUGIN_DIR, 'session_state.json');
+const PID_FILE = resolve(PLUGIN_DIR, '.auto_refresh_pid');
+const args = process.argv.slice(2);
+const INTERVAL_MS = (parseInt(args.find(a => !a.startsWith('--')), 10) || 15) * 1000;
+
+// ── --warn <amount>: set low-balance warning threshold ─────
+const warnIdx = args.indexOf('--warn');
+if (warnIdx !== -1 && args[warnIdx + 1] != null) {
+  const warnVal = parseFloat(args[warnIdx + 1]);
+  if (isNaN(warnVal) || warnVal < 0) {
+    process.stderr.write('❌ --warn 需要有效的正数金额，例如: --warn 10\n');
+    process.exit(1);
+  }
+  let state = {};
+  try { state = JSON.parse(readFileSync(STATE_FILE, 'utf-8')); } catch {}
+  state._warn_threshold = warnVal;
+  mkdirSync(resolve(__dirname, '..'), { recursive: true });
+  writeFileSync(STATE_FILE, JSON.stringify(state, null, 2), 'utf-8');
+  process.stderr.write(`✅ 低余额预警阈值已设为 ¥${warnVal.toFixed(2)}\n`);
+  process.stderr.write(`   余额 ≤ ¥${warnVal.toFixed(2)} 时 HUD 进度条变黄 + 充值提醒\n`);
+  process.exit(0);
+}
 
 // ── Singleton guard ─────────────────────────────────────────
 function isProcessAlive(pid) {
