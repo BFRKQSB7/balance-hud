@@ -1,21 +1,24 @@
 #!/usr/bin/env node
 /**
- * HUD Balance — Ultra-fast balance cache reader for claude-hud statusLine.
- * Reads session_state.json (no HTTP) and outputs a colored single-line balance bar.
+ * Balance HUD v1.1 — Cache reader for claude-hud statusLine.
  *
- * Output format (ANSI colored):
- *   DeepSeek ████████████████████░░░░ 余额 ¥13.37 | -¥0.93 (6.5%) 20:34:27
+ * Reads session_state.json (no HTTP, < 1ms) and outputs an ANSI-colored
+ * single-line balance progress bar. Designed to be called every statusLine
+ * refresh cycle by claude-hud.
  *
- * Bar: 20 chars wide, each char = 5% consumption.
- *   ≥100 cols → 20, ≥60 → 15, <60 → 10
+ * Output format:
+ *   DeepSeek 余额 ████████████████████░░░░ ¥13.37 | -¥0.93 (6.5%) 20:34:27
  *
- * Normal colors (balance > warn threshold):
- *   Bright green (█) = remaining balance  \x1b[92m
- *   Dark green (░)   = consumed portion   \x1b[32m
+ * Adaptive bar: ≥100 cols → 20 chars (5%/char), ≥60 → 15, <60 → 10.
  *
- * Low-balance colors (balance ≤ warn threshold, default ≤ ¥5):
- *   Bright yellow (█) = remaining balance \x1b[93m
- *   Dark yellow (░)   = consumed portion  \x1b[33m
+ * Normal (balance > warn threshold, default ¥5):
+ *   Bright green █ = remaining, dark green ░ = consumed
+ *
+ * Low balance (≤ warn threshold):
+ *   Bright yellow █ = remaining, dark yellow ░ = consumed
+ *   Red warning banner appended: ⚠️ 余额仅剩 ¥X.XX，请及时充值！
+ *
+ * Threshold set via: node auto_refresh.mjs --warn <amount>
  */
 
 import { readFileSync } from 'fs';
@@ -80,7 +83,7 @@ try {
     const currentBalance = s.last_balance.toFixed(2);
 
     // ── Low-balance threshold ──────────────────────────────────
-    // Default ≤ ¥5. User can override via: /balance --warn <amount>
+    // Default ≤ ¥5. Override via: node auto_refresh.mjs --warn <amount>
     const warnThreshold = (state._warn_threshold != null)
       ? parseFloat(state._warn_threshold) : 5.0;
     const isLow = s.last_balance <= warnThreshold;
