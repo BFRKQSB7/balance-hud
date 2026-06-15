@@ -1,0 +1,15 @@
+{
+  "description": "Auto-start balance-hud background refresh daemon on every Claude Code session",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c \"node ${CLAUDE_PLUGIN_ROOT}/scripts/auto_refresh.mjs </dev/null >/dev/null 2>&1 &\""
+          }
+        ]
+      }
+    ]
+  }
+}
