@@ -1,6 +1,0 @@
-{
-  "_comment": "Add to settings.json or claude-hud config.json",
-  "statusLine": {
-    "command": "node /YOUR/PATH/.claude/plugins/balance-hud/scripts/hud_balance.mjs"
-  }
-}
