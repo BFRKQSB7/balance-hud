@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Balance HUD v1.1 — Background refresh daemon.
+ * Balance HUD v1.1.2 — Background refresh daemon.
  *
  * Queries DeepSeek API every N seconds and writes last_balance/last_check
  * to session_state.json for the HUD renderer (hud_balance.mjs) to read.
  * No history entries — this is cache-only refresh.
  *
- * PID singleton lock prevents duplicate instances across sessions.
+ * PID preemptive lock: new session kills old daemon and takes over.
  * On startup, resets session state so consumption starts from zero.
  *
  * Usage:
@@ -54,16 +54,20 @@ function isProcessAlive(pid) {
   }
 }
 
-function acquireLock() {
+async function acquireLock() {
   try {
     if (existsSync(PID_FILE)) {
       const oldPid = parseInt(readFileSync(PID_FILE, 'utf-8').trim(), 10);
       if (isProcessAlive(oldPid)) {
-        // Another instance is already running — exit silently
-        process.exit(0);
+        // Previous session's daemon survived — kill it so new session starts fresh
+        try { process.kill(oldPid, 'SIGTERM'); } catch {}
+        try { unlinkSync(PID_FILE); } catch {}
+        // Brief yield to let OS reap the old process
+        await new Promise(r => setTimeout(r, 200));
+      } else {
+        // Stale PID file — remove it
+        try { unlinkSync(PID_FILE); } catch {}
       }
-      // Stale PID file — remove it
-      try { unlinkSync(PID_FILE); } catch {}
     }
     writeFileSync(PID_FILE, String(process.pid), 'utf-8');
     // Clean PID file on exit
@@ -153,8 +157,8 @@ if (!Object.keys(keys).length) {
   process.exit(0);
 }
 
-// Ensure only one instance runs; silently exit if another is alive
-acquireLock();
+// Ensure only one instance runs; kill old session daemon if still alive
+await acquireLock();
 
 // New session: reset saved state so consumption starts from zero
 resetSessionState();
