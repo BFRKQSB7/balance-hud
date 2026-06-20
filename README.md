@@ -17,13 +17,13 @@
 
 ### Windows
 
-1. 下载 `Balance HUD v1.1.2.zip` 和 `install-balance-hud.bat`，放同一目录
+1. 下载 `Balance HUD v1.1.3.zip` 和 `install-balance-hud.bat`，放同一目录
 2. 双击 `install-balance-hud.bat`，按提示输入 API Key
 
 ### macOS / Linux
 
 ```bash
-unzip "Balance HUD v1.1.2.zip" -d ~/.claude/plugins/
+unzip "Balance HUD v1.1.3.zip" -d ~/.claude/plugins/
 ```
 
 然后在 `~/.claude/settings.json` 配置 API Key 和 statusLine（参考 `config.example.json`）。
