@@ -1,0 +1,10 @@
+# Runtime files (generated per session)
+session_state.json
+.auto_refresh_pid
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/

@@ -1,0 +1,10 @@
+{
+  "name": "balance-hud",
+  "description": "Real-time API balance monitoring with terminal HUD progress bar. Tracks per-session consumption for DeepSeek, OpenAI, and Anthropic. Displays colored ANSI status bar via claude-hud integration.",
+  "version": "1.1.3",
+  "keywords": ["balance", "api", "monitoring", "hud", "deepseek", "openai", "anthropic", "cost-tracking"],
+  "author": {
+    "name": "NYRO",
+    "email": ""
+  }
+}
