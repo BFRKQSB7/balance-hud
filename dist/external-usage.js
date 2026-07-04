@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import { createDebug } from './debug.js';
 import { sanitizeDisplayText } from './utils/sanitize.js';
 const debug = createDebug('external-usage');
-const MAX_BALANCE_LABEL_LENGTH = 50;
+const MAX_BALANCE_LABEL_LENGTH = 512;
 export const EXTERNAL_USAGE_WRITE_THROTTLE_MS = 30_000;
 const fsDeps = {
     chmodSync: fs.chmodSync,

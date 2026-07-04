@@ -123,27 +123,6 @@ export function renderBalanceLine(ctx) {
     }
     return ctx.usageData.balanceLabel;
 }
-// ANSI constants matching v1.1.3 hud_balance.mjs consumed display
-const B_RED = '\x1b[31m';
-const B_MAGENTA = '\x1b[95m';
-const B_ORANGE = '\x1b[38;5;208m';
-const B_RESET = '\x1b[0m';
-function renderBalanceConsumed(ctx) {
-    // Render DeepSeek balance consumed as v1.1.3-style line:
-    //   RED -¥0.93  MAGENTA (6.5%)  ORANGE 20:34:27
-    const d = ctx.usageData;
-    const parts = [];
-    if (d.balanceConsumed != null && d.balanceConsumed > 0) {
-        parts.push(B_RED + '-¥' + d.balanceConsumed.toFixed(2) + B_RESET);
-    }
-    if (d.balancePct != null) {
-        parts.push(B_MAGENTA + '(' + d.balancePct.toFixed(1) + '%)' + B_RESET);
-    }
-    if (d.balanceTime) {
-        parts.push(B_ORANGE + d.balanceTime + B_RESET);
-    }
-    return parts.length > 0 ? parts.join(' ') : null;
-}
 function formatCompactWindowPart(windowLabel, percent, resetAt, windowMs, timeFormat, colors, usageValueMode = 'percent') {
     const usageDisplay = formatUsagePercent(percent, colors, usageValueMode);
     const reset = formatWindowTime(resetAt, windowMs, timeFormat);
