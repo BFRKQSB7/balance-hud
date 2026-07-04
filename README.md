@@ -58,9 +58,9 @@ unzip "balance-hud-v2.0.0.zip" -d ~/.claude/plugins/
 Expand-Archive "balance-hud-v2.0.0.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
 ```
 
-### 方式二：使用安装脚本
+### 方式二：交互式设置命令
 
-运行 `/balance-hud:setup` 命令，自动检测运行环境并配置 statusLine。
+安装插件后，在 Claude Code 中运行 `/balance-hud:setup` — 自动检测平台（Windows/macOS/Linux）、Shell 类型、运行时路径，配置 statusLine 并验证 HUD 正常工作。
 
 ## HUD 状态栏预览
 
