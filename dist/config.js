@@ -19,9 +19,7 @@ export const DEFAULT_ELEMENT_ORDER = [
     'todos',
     'sessionTime',
 ];
-export const DEFAULT_MERGE_GROUPS = [
-    ['context', 'usage'],
-];
+export const DEFAULT_MERGE_GROUPS = [];
 const KNOWN_ELEMENTS = new Set(DEFAULT_ELEMENT_ORDER);
 export const DEFAULT_CONFIG = {
     language: 'en',

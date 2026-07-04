@@ -45,7 +45,7 @@
     "showSessionStartDate": false,
     "showLastResponseAt": false,
     "showCompactions": false,
-    "mergeGroups": [["context", "usage"]],
+    "mergeGroups": [],
     "autocompactBuffer": "enabled",
     "contextWarningThreshold": 70,
     "contextCriticalThreshold": 85,

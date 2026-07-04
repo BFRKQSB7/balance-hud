@@ -323,7 +323,7 @@ function renderElementLine(ctx, element, options) {
         case 'context':
             return renderIdentityLine(ctx, alignProgressLabels);
         case 'usage':
-            return renderUsageLine(ctx, alignProgressLabels);
+            return null; // usage is rendered after balance line, not in element loop
         case 'promptCache':
             return renderPromptCacheLine(ctx);
         case 'memory':
@@ -438,10 +438,12 @@ export function render(ctx) {
     if (lineLayout === 'expanded') {
         const renderedLines = renderExpanded(ctx, terminalWidth);
         lines = renderedLines.map(({ line }) => line);
-        // ── Balance line (DeepSeek API balance) ────
+        // ── Usage + Balance line (merged) ────
+        const usageLine = renderUsageLine(ctx);
         const balanceLine = renderBalanceLine(ctx);
-        if (balanceLine) {
-            lines.push(balanceLine);
+        const usageBalanceLine = [usageLine, balanceLine].filter(Boolean).join(' │ ');
+        if (usageBalanceLine) {
+            lines.push(usageBalanceLine);
         }
         // Session token usage (cumulative)
         if (ctx.config?.display?.showSessionTokens) {
