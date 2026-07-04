@@ -1,9 +1,12 @@
 # Balance HUD v2.0.0
 
 > Claude Code 全功能插件 — 实时 HUD 状态栏 + API 余额监控
+>
+> **基于 [claude-hud](https://github.com/jarrodwatts/claude-hud) by [Jarrod Watts](https://github.com/jarrodwatts) (MIT) 开发**
 
 ![](https://img.shields.io/badge/version-2.0.0-blue)
 ![](https://img.shields.io/badge/license-MIT-green)
+![](https://img.shields.io/badge/based%20on-claude--hud%20v0.3.0-orange)
 
 Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud** (API 余额实时监控) 整合为一个独立运行的插件。
 
@@ -239,9 +242,16 @@ plugins/balance-hud/
 
 ## 许可证
 
-MIT
+本项目基于以下开源项目构建，遵循 MIT License：
+
+| 项目 | 作者 | 许可证 | 说明 |
+|------|------|--------|------|
+| [claude-hud](https://github.com/jarrodwatts/claude-hud) | Jarrod Watts | MIT | 全功能 HUD 渲染引擎 (v0.3.0) |
+| balance-hud | NYRO | MIT | API 余额监控 + 二次开发 |
+
+完整许可证文本见 [LICENSE](LICENSE)。第三方代码清单见 [NOTICE.md](NOTICE.md)。
 
 ## 致谢
 
-- **claude-hud** by [Jarrod Watts](https://github.com/jarrodwatts/claude-hud) — 全功能 HUD 引擎
-- **balance-hud** by NYRO — API 余额实时监控
+- **[claude-hud](https://github.com/jarrodwatts/claude-hud)** by [Jarrod Watts](https://github.com/jarrodwatts) — 全功能终端 HUD 状态栏引擎。本项目的 HUD 渲染管线（`dist/render/`、`dist/config.js`、国际化等）基于 claude-hud v0.3.0 开发。
+- **[Claude Code](https://claude.ai/code)** by Anthropic — 插件平台与 statusLine API
