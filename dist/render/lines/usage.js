@@ -22,10 +22,7 @@ export function renderUsageLine(ctx, alignLabels = false) {
     const usageLabel = '';
     const hasWindowData = ctx.usageData.fiveHour !== null || ctx.usageData.sevenDay !== null;
     if (!hasWindowData) {
-        // No API window data — show DeepSeek balance consumed info instead
-        if (ctx.usageData.balanceConsumed != null || ctx.usageData.balancePct != null) {
-            return renderBalanceConsumed(ctx);
-        }
+        // No API window data — balance label already shows consumed info, skip
         return null;
     }
     const timeFormat = normalizeTimeFormat(display?.timeFormat);

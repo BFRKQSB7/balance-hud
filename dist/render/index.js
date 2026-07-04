@@ -438,12 +438,14 @@ export function render(ctx) {
     if (lineLayout === 'expanded') {
         const renderedLines = renderExpanded(ctx, terminalWidth);
         lines = renderedLines.map(({ line }) => line);
-        // ── Usage + Balance line (merged) ────
-        const usageLine = renderUsageLine(ctx);
+        // ── Balance + Usage (separate lines) ────
         const balanceLine = renderBalanceLine(ctx);
-        const usageBalanceLine = [usageLine, balanceLine].filter(Boolean).join(' │ ');
-        if (usageBalanceLine) {
-            lines.push(usageBalanceLine);
+        if (balanceLine) {
+            lines.push(balanceLine);
+        }
+        const usageLine = renderUsageLine(ctx);
+        if (usageLine) {
+            lines.push(usageLine);
         }
         // Session token usage (cumulative)
         if (ctx.config?.display?.showSessionTokens) {
