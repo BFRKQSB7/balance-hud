@@ -1,0 +1,20 @@
+{
+  "name": "balance-hud",
+  "owner": {
+    "name": "NYRO",
+    "email": ""
+  },
+  "metadata": {
+    "description": "Real-time HUD statusline + API balance monitoring for Claude Code — context health, tool activity, agent tracking, todo progress, and DeepSeek/OpenAI/Anthropic balance tracking with low-balance warnings",
+    "version": "2.0.0"
+  },
+  "plugins": [
+    {
+      "name": "balance-hud",
+      "source": "./",
+      "description": "Real-time HUD statusline with API balance monitoring. Shows context usage, active tools, running agents, todo progress, git status, and live API balance with consumption tracking and low-balance warnings.",
+      "category": "monitoring",
+      "tags": ["hud", "balance", "monitoring", "context", "tools", "agents", "todos", "deepseek", "openai", "anthropic", "cost-tracking"]
+    }
+  ]
+}

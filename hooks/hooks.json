@@ -1,0 +1,16 @@
+{
+  "description": "Auto-start balance-hud background balance refresh daemon on every Claude Code session. Also initializes the HUD statusline engine.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/scripts/auto_refresh.mjs",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
