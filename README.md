@@ -31,17 +31,31 @@ Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud
 
 ## 快速安装
 
-### 方式一：解压安装 (推荐)
+### 方式一：插件市场安装 (推荐)
 
-**Windows / macOS / Linux：**
+在 Claude Code 中运行：
+
+```
+/plugin marketplace add BFRKQSB7/balance-hud
+/plugin install balance-hud@balance-hud
+/balance-hud:setup
+```
+
+`/balance-hud:setup` 自动检测平台 + Shell + 运行时，配置 statusLine 并验证 HUD。
+
+### 方式二：手动解压安装
+
+从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.0.0.zip`：
 
 ```bash
-# 解压到 Claude Code 插件目录
+# macOS / Linux
 unzip "balance-hud-v2.0.0.zip" -d ~/.claude/plugins/
 
-# 配置 statusLine (使用 balance-hud 作为状态栏)
-# 在 ~/.claude/settings.json 中添加：
+# Windows (PowerShell)
+Expand-Archive "balance-hud-v2.0.0.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
 ```
+
+然后在 `~/.claude/settings.json` 中配置：
 
 ```json
 {
@@ -52,15 +66,11 @@ unzip "balance-hud-v2.0.0.zip" -d ~/.claude/plugins/
 }
 ```
 
-**Windows (PowerShell)：**
+最后运行 `/balance-hud:setup` 验证配置。
 
-```powershell
-Expand-Archive "balance-hud-v2.0.0.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
-```
+### 方式三：交互式设置命令
 
-### 方式二：交互式设置命令
-
-安装插件后，在 Claude Code 中运行 `/balance-hud:setup` — 自动检测平台（Windows/macOS/Linux）、Shell 类型、运行时路径，配置 statusLine 并验证 HUD 正常工作。
+如果插件已通过 marketplace 安装，直接运行 `/balance-hud:setup` — 自动检测平台、Shell、运行时路径，配置 statusLine 并验证 HUD。
 
 ## HUD 状态栏预览
 
