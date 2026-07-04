@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Balance HUD v1.1.3 — Cache reader for claude-hud statusLine.
+ * Balance HUD v2.0.0 — Cache reader for claude-hud statusLine.
  *
  * Reads session_state.json (no HTTP, < 1ms) and outputs an ANSI-colored
  * single-line balance display. Designed to be called every statusLine

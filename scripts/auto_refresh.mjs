@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Balance HUD v1.1.3 — Background refresh daemon.
+ * Balance HUD v2.0.0 — Background refresh daemon.
  *
  * Queries DeepSeek API every N seconds and writes last_balance/last_check
  * to session_state.json for the HUD renderer (hud_balance.mjs) to read.
