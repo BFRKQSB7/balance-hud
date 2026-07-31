@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Balance HUD v2.0.0 — Background refresh daemon.
+ * Balance HUD v2.1.0 — Background refresh daemon.
  *
  * Queries DeepSeek API every N seconds and writes last_balance/last_check
  * to session_state.json for the HUD renderer (hud_balance.mjs) to read.
@@ -149,10 +149,32 @@ function refreshState(provider, balance) {
   } catch { /* ignore */ }
 }
 
+// ── Empty snapshot (non-DeepSeek session) ──────────────────
+function writeEmptyBalanceSnapshot() {
+  const SNAPSHOT_FILE = resolve(PLUGIN_DIR, 'balance_usage.json');
+  try {
+    const snapshot = {
+      updated_at: new Date().toISOString(),
+      five_hour: { used_percentage: null, resets_at: null },
+      seven_day: { used_percentage: null, resets_at: null },
+    };
+    writeFileSync(SNAPSHOT_FILE, JSON.stringify(snapshot, null, 2), 'utf-8');
+  } catch { /* ignore */ }
+}
+
 // ── Main loop ──────────────────────────────────────────────
 const keys = getKeys();
 
 if (!Object.keys(keys).length) {
+  // Non-DeepSeek session (no DeepSeek keys configured). Still take over the
+  // PID lock — this kills any previous session's daemon that might keep
+  // polling DeepSeek — then clear the balance snapshot. Otherwise a stale
+  // DeepSeek balance row would linger in the HUD for up to the freshness
+  // window after switching APIs. The HUD itself renders normally for any API;
+  // only the balance row disappears.
+  await acquireLock();
+  resetSessionState();
+  writeEmptyBalanceSnapshot();
   process.stderr.write('[balance-refresh] No API keys configured. Exiting.\n');
   process.exit(0);
 }

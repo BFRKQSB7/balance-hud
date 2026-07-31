@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Balance HUD v2.0.0 — External usage snapshot writer.
+ * Balance HUD v2.1.0 — External usage snapshot writer.
  *
  * Reads session_state.json and writes an external-usage-compatible JSON
  * snapshot that the HUD engine (dist/index.js) reads via

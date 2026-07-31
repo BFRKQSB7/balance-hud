@@ -19,7 +19,7 @@ export function renderUsageLine(ctx, alignLabels = false) {
     if (shouldHideUsage(ctx.stdin)) {
         return null;
     }
-    const usageLabel = '';
+    const usageLabel = label(t('label.usage'), colors);
     const hasWindowData = ctx.usageData.fiveHour !== null || ctx.usageData.sevenDay !== null;
     if (!hasWindowData) {
         // No API window data — balance label already shows consumed info, skip
@@ -43,7 +43,7 @@ export function renderUsageLine(ctx, alignLabels = false) {
                 ? ` (${t(resetsKey)} ${resetTime})`
                 : ` (${resetTime})`
             : "";
-        return critical(`⚠ ${t("status.limitReached")}${resetSuffix}`, colors);
+        return `${usageLabel} ${critical(`⚠ ${t("status.limitReached")}${resetSuffix}`, colors)}`;
     }
     const threshold = display?.usageThreshold ?? 0;
     const fiveHour = ctx.usageData.fiveHour;
@@ -80,7 +80,7 @@ export function renderUsageLine(ctx, alignLabels = false) {
             showResetLabel,
             usageValueMode,
         });
-        return weeklyOnlyPart;
+        return `${usageLabel} ${weeklyOnlyPart}`;
     }
     const fiveHourPart = formatUsageWindowPart({
         percent: fiveHour,
@@ -105,9 +105,9 @@ export function renderUsageLine(ctx, alignLabels = false) {
             showResetLabel,
             usageValueMode,
         });
-        return `${fiveHourPart} | ${sevenDayPart}`;
+        return `${usageLabel} ${fiveHourPart} | ${sevenDayPart}`;
     }
-    return fiveHourPart;
+    return `${usageLabel} ${fiveHourPart}`;
 }
 export function renderBalanceLine(ctx) {
     const display = ctx.config?.display;

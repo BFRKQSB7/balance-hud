@@ -1,14 +1,16 @@
-# Balance HUD v2.0.0
+# Balance HUD v2.1.0
 
 > Claude Code 全功能插件 — 实时 HUD 状态栏 + API 余额监控
 >
 > **基于 [claude-hud](https://github.com/jarrodwatts/claude-hud) by [Jarrod Watts](https://github.com/jarrodwatts) (MIT) 开发**
 
-![](https://img.shields.io/badge/version-2.0.0-blue)
+![](https://img.shields.io/badge/version-2.1.0-blue)
 ![](https://img.shields.io/badge/license-MIT-green)
 ![](https://img.shields.io/badge/based%20on-claude--hud%20v0.3.0-orange)
 
 Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud** (API 余额实时监控) 整合为一个独立运行的插件。
+
+> 💡 **与 API 无关**：HUD 状态栏在任意 API 下均可用（DeepSeek / Anthropic 官方 / OpenAI 兼容等）。仅 **DeepSeek 余额行** 依赖 DeepSeek API — 使用非 DeepSeek API 时该行整行自动隐藏，呈现纯净的 claude-hud 状态栏。
 
 ## 功能
 
@@ -23,7 +25,7 @@ Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud
 - **多语言** — 英文 / 中文 标签切换
 - **高度可配** — 布局、颜色、元素排序、合并行等全部可自定义
 
-### 💰 API 余额监控 (来自 balance-hud v1.1.3)
+### 💰 API 余额监控 (来自 balance-hud v1.1.3, 仅 DeepSeek)
 - **DeepSeek 实时余额** — 15s 自动轮询，实时余额 + 消耗追踪
 - **低余额预警** — 默认 ≤ ¥5 黄色提醒 + 红色充值警告，阈值可配
 - **会话独立消耗** — 每次启动重置计数 (PID 抢占式锁)
@@ -45,14 +47,14 @@ Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud
 
 ### 方式二：手动解压安装
 
-从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.0.0.zip`：
+从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.1.0.zip`：
 
 ```bash
 # macOS / Linux
-unzip "balance-hud-v2.0.0.zip" -d ~/.claude/plugins/
+unzip "balance-hud-v2.1.0.zip" -d ~/.claude/plugins/
 
 # Windows (PowerShell)
-Expand-Archive "balance-hud-v2.0.0.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
+Expand-Archive "balance-hud-v2.1.0.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
 ```
 
 然后在 `~/.claude/settings.json` 中配置：
@@ -94,6 +96,16 @@ DeepSeek ¥13.37 | -¥0.93 (6.5%) 12:34:56
 [Opus] │ my-project git:(main*)
 Context ██████░░░░ 55% │ Usage ██░░░░░░░░ 25% (1h 30m / 5h)
 ⚠️ DeepSeek ¥3.50 | -¥7.53 (68.3%) — 请及时充值！
+```
+
+### 非 DeepSeek API (claude-hud 外观)
+
+使用非 DeepSeek API（如 Anthropic 官方、OpenAI 兼容等）时，DeepSeek 余额行整行隐藏，HUD 呈现纯净的 claude-hud 状态栏：
+
+```
+[Opus] │ my-project git:(main*)
+Context ████████░░  76%
+Usage ██░░░░░░░░ 25% (1h 30m / 5h)
 ```
 
 ## 配置
@@ -148,20 +160,22 @@ SessionStart 钩子 (Claude Code 启动)
      │
      ├──→ auto_refresh.mjs (后台进程, 每 15s 查询 DeepSeek API)
      │         │
-     │         ├── 写入 session_state.json (余额缓存)
-     │         └── 写入 balance_usage.json (HUD 快照)
+     │         ├── 有 DeepSeek Key → 轮询余额 → 写入 balance_usage.json (含余额行)
+     │         └── 无 DeepSeek Key (非 DeepSeek API) → 杀旧守护进程 + 清空余额快照 → 退出
      │
      └──→ Claude Code 每 ~300ms 调用 statusLine
                │
-               └──→ dist/index.js (HUD 引擎)
+               └──→ dist/index.js (HUD 引擎, 与 API 无关)
                          │
                          ├── stdin JSON (模型, 上下文, Token)
                          ├── transcript JSONL (工具, Agent, Todo)
                          ├── config 文件 (MCP, rules, hooks)
-                         ├── balance_usage.json (余额标签, 自动检测)
+                         ├── balance_usage.json (余额标签, 自动检测; 无余额数据则隐藏余额行)
                          │
                          └──→ stdout → 多行 HUD 状态栏
 ```
+
+非 DeepSeek API 会话：`auto_refresh.mjs` 无 DeepSeek Key 时接管 PID 锁（杀掉上个 DeepSeek 会话残留的守护进程）并清空余额快照，确保余额行立即消失，HUD 其余部分不受影响。
 
 ## 环境变量
 
@@ -231,6 +245,11 @@ plugins/balance-hud/
 | `12:34:56` | 橙色 | 刷新时间 |
 
 ## 变更日志
+
+### v2.1.0
+- **新增**：HUD 状态栏与 API 无关 — 任意 API (DeepSeek / Anthropic 官方 / OpenAI 兼容) 下均正常显示，非 DeepSeek 时余额行整行隐藏 (claude-hud 外观)
+- **修复**：非 DeepSeek 会话 (无 DeepSeek Key) 自动接管 PID 锁并清空余额快照，防止残留的 DeepSeek 余额行显示
+- **优化**：用量行补回 `Usage` / `用量` 标签 (修复 expanded 布局用量行无标签问题)
 
 ### v2.0.0
 - **整合**：claude-hud v0.3.0 全功能 HUD 引擎 + balance-hud v1.1.3 余额监控
