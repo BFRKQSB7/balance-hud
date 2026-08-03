@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Real-time HUD statusline + API balance monitoring for Claude Code — context health, tool activity, agent tracking, todo progress, and DeepSeek/OpenAI/Anthropic balance tracking with low-balance warnings",
-    "version": "2.1.0"
+    "version": "2.1.1"
   },
   "plugins": [
     {

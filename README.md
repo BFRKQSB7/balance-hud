@@ -1,10 +1,10 @@
-# Balance HUD v2.1.0
+# Balance HUD v2.1.1
 
 > Claude Code 全功能插件 — 实时 HUD 状态栏 + API 余额监控
 >
 > **基于 [claude-hud](https://github.com/jarrodwatts/claude-hud) by [Jarrod Watts](https://github.com/jarrodwatts) (MIT) 开发**
 
-![](https://img.shields.io/badge/version-2.1.0-blue)
+![](https://img.shields.io/badge/version-2.1.1-blue)
 ![](https://img.shields.io/badge/license-MIT-green)
 ![](https://img.shields.io/badge/based%20on-claude--hud%20v0.3.0-orange)
 
@@ -47,14 +47,14 @@ Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud
 
 ### 方式二：手动解压安装
 
-从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.1.0.zip`：
+从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.1.1.zip`：
 
 ```bash
 # macOS / Linux
-unzip "balance-hud-v2.1.0.zip" -d ~/.claude/plugins/
+unzip "balance-hud-v2.1.1.zip" -d ~/.claude/plugins/
 
 # Windows (PowerShell)
-Expand-Archive "balance-hud-v2.1.0.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
+Expand-Archive "balance-hud-v2.1.1.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
 ```
 
 然后在 `~/.claude/settings.json` 中配置：
@@ -182,7 +182,7 @@ SessionStart 钩子 (Claude Code 启动)
 | 变量 | 说明 |
 |------|------|
 | `DEEPSEEK_API_KEY` | DeepSeek API Key (优先级最高) |
-| `ANTHROPIC_AUTH_TOKEN` | DeepSeek 回退 Key (Claude Code 自带) |
+| `ANTHROPIC_AUTH_TOKEN` | DeepSeek 回退 Key — 仅当 `ANTHROPIC_BASE_URL` 指向 DeepSeek 时使用；第三方代理/中转 (如 ccswitch) 不会用它查余额 |
 | `OPENAI_API_KEY` | OpenAI API Key |
 | `BALANCE_HUD_DISABLE` | 设为 1 禁用 HUD |
 | `CLAUDE_HUD_DISABLE` | 兼容旧版禁用变量 |
@@ -245,6 +245,9 @@ plugins/balance-hud/
 | `12:34:56` | 橙色 | 刷新时间 |
 
 ## 变更日志
+
+### v2.1.1
+- **修复**：余额守护进程不再把任意 `ANTHROPIC_AUTH_TOKEN` 当 DeepSeek Key 直连官网余额接口 — 仅当 `ANTHROPIC_BASE_URL` 指向 DeepSeek 时才回退使用；第三方代理/中转会话 (如 ccswitch) 不再触发 `api.deepseek.com/user/balance` 查询，余额行干净隐藏。显式设置 `DEEPSEEK_API_KEY` 时不受影响
 
 ### v2.1.0
 - **新增**：HUD 状态栏与 API 无关 — 任意 API (DeepSeek / Anthropic 官方 / OpenAI 兼容) 下均正常显示，非 DeepSeek 时余额行整行隐藏 (claude-hud 外观)

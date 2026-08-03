@@ -84,8 +84,22 @@ async function acquireLock() {
 // ── Key discovery ──────────────────────────────────────────
 function getKeys() {
   const keys = {};
-  const ds = process.env.DEEPSEEK_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || '';
-  if (ds) keys.deepseek = ds;
+  // Explicit DeepSeek key always wins.
+  const deepseekKey = process.env.DEEPSEEK_API_KEY || '';
+  if (deepseekKey) {
+    keys.deepseek = deepseekKey;
+    return keys;
+  }
+  // ANTHROPIC_AUTH_TOKEN is only usable as a DeepSeek balance key when the
+  // base URL actually points at DeepSeek. With a third-party proxy/relay
+  // (e.g. ccswitch), the token is a proxy credential — sending it to the
+  // official api.deepseek.com/user/balance endpoint would hit the real API
+  // and fail anyway. Only the explicit DEEPSEEK_API_KEY proves intent.
+  const baseUrl = (process.env.ANTHROPIC_BASE_URL || process.env.ANTHROPIC_API_BASE_URL || '').toLowerCase();
+  const token = process.env.ANTHROPIC_AUTH_TOKEN || '';
+  if (token && baseUrl.includes('deepseek')) {
+    keys.deepseek = token;
+  }
   return keys; // Only DeepSeek supports real-time balance; OpenAI/Anthropic need admin keys
 }
 
