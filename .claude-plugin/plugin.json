@@ -1,15 +1,16 @@
 {
   "name": "balance-hud",
   "description": "Real-time HUD statusline for Claude Code with API balance monitoring. Shows context health, tool activity, agent tracking, todo progress, git status, and DeepSeek/OpenAI/Anthropic balance tracking with low-balance warnings.",
-  "version": "2.1.1",
-  "keywords": ["hud", "balance", "api", "monitoring", "deepseek", "openai", "anthropic", "cost-tracking", "statusline", "context", "tools", "agents", "todos", "claude-code"],
+  "version": "2.1.2",
+  "keywords": ["hud", "balance", "api", "monitoring", "deepseek", "openai", "anthropic", "cost-tracking", "statusline", "context", "tools", "agents", "todos", "claude-code", "debug"],
   "author": {
     "name": "NYRO",
     "email": ""
   },
   "commands": [
     "./commands/setup.md",
-    "./commands/configure.md"
+    "./commands/configure.md",
+    "./commands/debug.md"
   ],
   "license": "MIT"
 }

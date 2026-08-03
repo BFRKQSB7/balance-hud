@@ -170,6 +170,22 @@ export async function main(overrides = {}) {
     }
 }
 /**
+ * True when the current environment is genuinely pointing at DeepSeek, i.e. a
+ * balance snapshot should be considered. Mirrors auto_refresh's getKeys():
+ * an explicit DEEPSEEK_API_KEY always counts; ANTHROPIC_AUTH_TOKEN only counts
+ * when the base URL contains "deepseek". A third-party relay (e.g. ccswitch →
+ * OpenCode Go) must never surface a DeepSeek balance row — even if a lingering
+ * daemon from a previous DeepSeek session keeps writing a fresh snapshot.
+ */
+function isDeepSeekEnv(env = process.env) {
+    if (env.DEEPSEEK_API_KEY?.trim()) {
+        return true;
+    }
+    const baseUrl = (env.ANTHROPIC_BASE_URL || env.ANTHROPIC_API_BASE_URL || '').toLowerCase();
+    const token = env.ANTHROPIC_AUTH_TOKEN?.trim() || '';
+    return Boolean(token && baseUrl.includes('deepseek'));
+}
+/**
  * Try to load the full usage snapshot from the plugin's balance_usage.json.
  * The auto_refresh daemon writes this file after each DeepSeek API poll.
  * Returns a usage object { fiveHour, sevenDay, fiveHourResetAt, sevenDayResetAt, balanceLabel }
@@ -179,6 +195,8 @@ function tryLoadAutoSnapshot(config, deps) {
     try {
         // If externalUsagePath is explicitly set, skip auto-detection
         if (config.display.externalUsagePath) return null;
+        // Never surface a balance snapshot in a non-DeepSeek session.
+        if (!isDeepSeekEnv()) return null;
         // Resolve plugin root: dist/index.js → ../balance_usage.json
         const distDir = dirname(fileURLToPath(import.meta.url));
         const pluginRoot = join(distDir, '..');

@@ -177,12 +177,49 @@ const ENTERPRISE_ALIAS_LABELS = {
     sonnetplan: 'Claude Sonnet',
     haikuplan: 'Claude Haiku',
 };
+// Claude role → env var suffix for the real provider model. Third-party relays
+// (e.g. cc-switch → OpenCode Go) remap Claude models via
+// ANTHROPIC_DEFAULT_<ROLE>_MODEL / _MODEL_NAME; without this the HUD shows the
+// role ("claude-sonnet-4-6") instead of the real model ("deepseek-v4-flash").
+const MODEL_ROLE_ENV_SUFFIX = {
+    opus: 'OPUS',
+    sonnet: 'SONNET',
+    haiku: 'HAIKU',
+    fable: 'FABLE',
+};
+function resolveEnvModelAlias(modelId, env = process.env) {
+    if (!modelId) {
+        return null;
+    }
+    const match = /^claude-(opus|sonnet|haiku|fable)-/i.exec(modelId.trim());
+    if (!match) {
+        return null;
+    }
+    const suffix = MODEL_ROLE_ENV_SUFFIX[match[1].toLowerCase()];
+    if (!suffix) {
+        return null;
+    }
+    const real = env[`ANTHROPIC_DEFAULT_${suffix}_MODEL_NAME`] || env[`ANTHROPIC_DEFAULT_${suffix}_MODEL`];
+    if (typeof real !== 'string' || !real.trim()) {
+        return null;
+    }
+    const trimmed = real.trim();
+    if (trimmed.toLowerCase() === modelId.trim().toLowerCase()) {
+        return null; // not actually remapped
+    }
+    return trimmed;
+}
 export function getModelName(stdin) {
+    const modelId = stdin.model?.id?.trim();
+    // Third-party relays: prefer the real provider model over the role alias.
+    const envResolved = resolveEnvModelAlias(modelId);
+    if (envResolved) {
+        return envResolved;
+    }
     const displayName = stdin.model?.display_name?.trim();
     if (displayName) {
         return displayName;
     }
-    const modelId = stdin.model?.id?.trim();
     if (!modelId) {
         return 'Unknown';
     }

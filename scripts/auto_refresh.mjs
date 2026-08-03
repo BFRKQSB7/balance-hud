@@ -104,10 +104,12 @@ function getKeys() {
 }
 
 // ── API call ───────────────────────────────────────────────
+const BALANCE_FETCH_TIMEOUT_MS = 8000;
 async function checkDeepSeek(key) {
   try {
     const resp = await fetch('https://api.deepseek.com/user/balance', {
-      headers: { Accept: 'application/json', Authorization: `Bearer ${key}` }
+      headers: { Accept: 'application/json', Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(BALANCE_FETCH_TIMEOUT_MS),
     });
     if (!resp.ok) return null;
     const data = await resp.json();
@@ -280,11 +282,29 @@ async function tick() {
   writeBalanceSnapshot();
 }
 
+// ── Orphan self-termination ────────────────────────────────
+// The SessionStart hook spawns this daemon as a child of the Claude Code
+// process. On Windows an async-hook child can outlive its parent, so a daemon
+// would keep polling DeepSeek and writing balance_usage.json after the user
+// closed the session — which is exactly how a stale DeepSeek balance row
+// survives a provider switch. Exit shortly after the parent dies.
+function isParentAlive() {
+  const ppid = process.ppid;
+  if (!ppid || ppid <= 0) return true; // cannot determine → stay up
+  try { process.kill(ppid, 0); return true; } catch { return false; }
+}
+
 // First tick immediately, then loop
 await tick();
 
 // setInterval with async is fine — each tick is independent
-setInterval(() => { tick().catch(() => {}); }, INTERVAL_MS);
+setInterval(() => {
+  if (!isParentAlive()) {
+    process.stderr.write('[balance-refresh] Parent session exited. Shutting down.\n');
+    process.exit(0);
+  }
+  tick().catch(() => {});
+}, INTERVAL_MS);
 
 // Keep the process alive
 process.stdin.resume();

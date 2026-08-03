@@ -1,10 +1,10 @@
-# Balance HUD v2.1.1
+# Balance HUD v2.1.2
 
 > Claude Code 全功能插件 — 实时 HUD 状态栏 + API 余额监控
 >
 > **基于 [claude-hud](https://github.com/jarrodwatts/claude-hud) by [Jarrod Watts](https://github.com/jarrodwatts) (MIT) 开发**
 
-![](https://img.shields.io/badge/version-2.1.1-blue)
+![](https://img.shields.io/badge/version-2.1.2-blue)
 ![](https://img.shields.io/badge/license-MIT-green)
 ![](https://img.shields.io/badge/based%20on-claude--hud%20v0.3.0-orange)
 
@@ -47,14 +47,14 @@ Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud
 
 ### 方式二：手动解压安装
 
-从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.1.1.zip`：
+从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.1.2.zip`：
 
 ```bash
 # macOS / Linux
-unzip "balance-hud-v2.1.1.zip" -d ~/.claude/plugins/
+unzip "balance-hud-v2.1.2.zip" -d ~/.claude/plugins/
 
 # Windows (PowerShell)
-Expand-Archive "balance-hud-v2.1.1.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
+Expand-Archive "balance-hud-v2.1.2.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
 ```
 
 然后在 `~/.claude/settings.json` 中配置：
@@ -214,12 +214,16 @@ plugins/balance-hud/
 │   ├── utils/                   # 工具函数
 │   └── ...
 ├── scripts/
-│   ├── auto_refresh.mjs         # 余额刷新守护进程 (15s 轮询 + PID 锁 + --warn)
+│   ├── auto_refresh.mjs         # 余额刷新守护进程 (15s 轮询 + PID 锁 + --warn + 孤儿自终止)
 │   ├── hud_balance.mjs          # 余额 HUD 渲染 (ANSI 彩色, 独立可用)
-│   └── balance_snapshot.mjs     # 余额快照生成器
+│   ├── balance_snapshot.mjs     # 余额快照生成器
+│   ├── fix_statusline.mjs       # statusLine 看门狗 (ccswitch 重写 settings.json 时自动补回)
+│   └── hud_debug.mjs            # 诊断脚本 (/balance-hud:debug 后端)
+├── statusline.mjs               # 可移植 statusLine 包装器 (设 COLUMNS + 定位插件)
 ├── commands/
 │   ├── setup.md                 # /balance-hud:setup 安装配置命令
-│   └── configure.md             # /balance-hud:configure 交互式配置命令
+│   ├── configure.md             # /balance-hud:configure 交互式配置命令
+│   └── debug.md                 # /balance-hud:debug 诊断命令
 ├── config.json                  # 默认 HUD 配置
 ├── session_state.json           # 余额运行时缓存
 ├── balance_usage.json           # HUD 余额快照 (自动生成)
@@ -233,6 +237,7 @@ plugins/balance-hud/
 |------|------|
 | `/balance-hud:setup` | 自动检测环境，配置 statusLine |
 | `/balance-hud:configure` | 交互式 HUD 配置 (布局、功能开关、颜色等) |
+| `/balance-hud:debug` | 诊断 HUD — provider 分类、statusLine 接线、余额快照、daemon/看门狗、模拟渲染 |
 
 ## 颜色说明 (余额行)
 
@@ -245,6 +250,12 @@ plugins/balance-hud/
 | `12:34:56` | 橙色 | 刷新时间 |
 
 ## 变更日志
+
+### v2.1.2
+- **新增**：`/balance-hud:debug` 诊断命令 — 自动检查 provider 分类、statusLine 接线、余额快照、daemon/看门狗状态，并模拟渲染定位接线 bug
+- **修复**：切换 provider 后残留 DeepSeek 余额行 — ① HUD 读余额快照前验证当前环境是否真是 DeepSeek (`isDeepSeekEnv`) ② 余额 daemon 检测父进程 (Claude Code) 退出后自动终止，不再跨会话残留轮询 ③ 余额 API fetch 加 8s 超时，防悬空请求累积
+- **修复**：第三方中转 (如 OpenCode Go) 下模型只显示角色名 (`claude-sonnet-4-6`) — 现按 `ANTHROPIC_DEFAULT_<ROLE>_MODEL_NAME` env 重映射显示真实模型 (`deepseek-v4-flash`)
+- **新增**：`statusline.mjs` 可移植包装器 + `fix_statusline.mjs` 看门狗 — ccswitch 等工具重写 `settings.json` 丢 `statusLine` 时自动补回 (Windows 启动项 `balance-hud-statusline.vbs`)
 
 ### v2.1.1
 - **修复**：余额守护进程不再把任意 `ANTHROPIC_AUTH_TOKEN` 当 DeepSeek Key 直连官网余额接口 — 仅当 `ANTHROPIC_BASE_URL` 指向 DeepSeek 时才回退使用；第三方代理/中转会话 (如 ccswitch) 不再触发 `api.deepseek.com/user/balance` 查询，余额行干净隐藏。显式设置 `DEEPSEEK_API_KEY` 时不受影响
