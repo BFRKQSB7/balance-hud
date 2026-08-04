@@ -1,17 +1,22 @@
 import { en } from "./en.js";
 import { zhHans } from "./zh-Hans.js";
+import { zhHant } from "./zh-Hant.js";
 const locales = {
     en,
     zh: zhHans,
     "zh-Hans": zhHans,
+    "zh-Hant": zhHant,
+    "zh-TW": zhHant,
 };
 // Resolve short language tags to canonical BCP 47 forms.
-// Based on CLDR likely subtags: zh → zh-Hans-CN
+// Based on CLDR likely subtags: zh → zh-Hans-CN, zh-TW → zh-Hant-TW
 // https://www.unicode.org/cldr/charts/latest/supplemental/likely_subtags.html
 const CANONICAL = {
     "en": "en",
     "zh": "zh-Hans",
     "zh-Hans": "zh-Hans",
+    "zh-Hant": "zh-Hant",
+    "zh-TW": "zh-Hant",
 };
 let currentLanguage = "en";
 export function setLanguage(lang) {
@@ -26,7 +31,8 @@ export function getCanonicalLanguage() {
 }
 // https://www.unicode.org/reports/tr11/
 export function isCjkLanguage() {
-    return getCanonicalLanguage() === "zh-Hans";
+    const canon = getCanonicalLanguage();
+    return canon === "zh-Hans" || canon === "zh-Hant";
 }
 export function t(key) {
     const canon = getCanonicalLanguage();

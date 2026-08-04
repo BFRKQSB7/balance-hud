@@ -21,6 +21,11 @@ export const DEFAULT_ELEMENT_ORDER = [
 ];
 export const DEFAULT_MERGE_GROUPS = [];
 const KNOWN_ELEMENTS = new Set(DEFAULT_ELEMENT_ORDER);
+const PROJECT_LINE_SEGMENTS = ['model', 'project', 'advisor', 'sessionName', 'version', 'extra', 'duration', 'cost', 'speed'];
+const KNOWN_FIRST_LINE_SEGMENTS = new Set(PROJECT_LINE_SEGMENTS);
+// An empty order is deliberate: renderers retain their native segment order
+// until the user opts in to moving one or more segments.
+export const DEFAULT_PROJECT_LINE_ORDER = [];
 export const DEFAULT_CONFIG = {
     language: 'en',
     lineLayout: 'expanded',
@@ -29,6 +34,7 @@ export const DEFAULT_CONFIG = {
     maxWidth: null,
     forceMaxWidth: false,
     elementOrder: [...DEFAULT_ELEMENT_ORDER],
+    projectLineOrder: [...DEFAULT_PROJECT_LINE_ORDER],
     gitStatus: {
         enabled: true,
         showDirty: true,
@@ -73,6 +79,7 @@ export const DEFAULT_CONFIG = {
         showSessionStartDate: false,
         showLastResponseAt: false,
         showCompactions: false,
+        showCacheEffect: false,
         mergeGroups: DEFAULT_MERGE_GROUPS.map(group => [...group]),
         autocompactBuffer: 'enabled',
         contextWarningThreshold: 70,
@@ -115,7 +122,7 @@ export function getConfigPath() {
     return path.join(getHudPluginDir(homeDir), 'config.json');
 }
 function validatePathLevels(value) {
-    return value === 1 || value === 2 || value === 3;
+    return value === 1 || value === 2 || value === 3 || value === 'full';
 }
 function validateLineLayout(value) {
     return value === 'compact' || value === 'expanded';
@@ -133,7 +140,7 @@ function validateUsageValue(value) {
     return value === 'percent' || value === 'remaining';
 }
 function validateLanguage(value) {
-    return value === 'en' || value === 'zh' || value === 'zh-Hans';
+    return value === 'en' || value === 'zh' || value === 'zh-Hans' || value === 'zh-Hant' || value === 'zh-TW';
 }
 function validateModelFormat(value) {
     return value === 'full' || value === 'compact' || value === 'short';
@@ -200,6 +207,27 @@ function validateElementOrder(value) {
         elementOrder.push(element);
     }
     return elementOrder.length > 0 ? elementOrder : [...DEFAULT_ELEMENT_ORDER];
+}
+// Unlike `elementOrder`, `projectLineOrder` only reorders first-line segments.
+// A partial list is preserved as a requested prefix; the renderer appends all
+// remaining visible parts in its own native order.
+function validateProjectLineOrder(value) {
+    if (!Array.isArray(value)) {
+        return [...DEFAULT_PROJECT_LINE_ORDER];
+    }
+    const seen = new Set();
+    const order = [];
+    for (const item of value) {
+        if (typeof item !== 'string' || !KNOWN_FIRST_LINE_SEGMENTS.has(item)) {
+            continue;
+        }
+        if (seen.has(item)) {
+            continue;
+        }
+        seen.add(item);
+        order.push(item);
+    }
+    return order;
 }
 function validateMergeGroups(value) {
     if (!Array.isArray(value)) {
@@ -330,6 +358,7 @@ export function mergeConfig(userConfig) {
         ? Math.floor(rawMaxWidth)
         : null;
     const elementOrder = validateElementOrder(migrated.elementOrder);
+    const projectLineOrder = validateProjectLineOrder(migrated.projectLineOrder);
     const forceMaxWidth = typeof migrated.forceMaxWidth === 'boolean'
         ? migrated.forceMaxWidth
         : DEFAULT_CONFIG.forceMaxWidth;
@@ -449,6 +478,9 @@ export function mergeConfig(userConfig) {
         showCompactions: typeof migrated.display?.showCompactions === 'boolean'
             ? migrated.display.showCompactions
             : DEFAULT_CONFIG.display.showCompactions,
+        showCacheEffect: typeof migrated.display?.showCacheEffect === 'boolean'
+            ? migrated.display.showCacheEffect
+            : DEFAULT_CONFIG.display.showCacheEffect,
         mergeGroups: validateMergeGroups(migrated.display?.mergeGroups),
         autocompactBuffer: validateAutocompactBuffer(migrated.display?.autocompactBuffer)
             ? migrated.display.autocompactBuffer
@@ -531,7 +563,7 @@ export function mergeConfig(userConfig) {
             ? migrated.colors.barEmpty
             : DEFAULT_CONFIG.colors.barEmpty,
     };
-    return { language, lineLayout, showSeparators, pathLevels, maxWidth, forceMaxWidth, elementOrder, gitStatus, display, colors };
+    return { language, lineLayout, showSeparators, pathLevels, maxWidth, forceMaxWidth, elementOrder, projectLineOrder, gitStatus, display, colors };
 }
 export async function loadConfig() {
     const configPath = getConfigPath();

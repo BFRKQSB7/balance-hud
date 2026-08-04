@@ -133,4 +133,25 @@ export function coloredBar(percent, width = 10, colors, thresholds) {
     const emptyChar = colors?.barEmpty ?? '░';
     return `${color}${filledChar.repeat(filled)}${DIM}${emptyChar.repeat(empty)}${RESET}`;
 }
+// Cache effect scale is inverted vs context: a HIGH hit share is GOOD (green),
+// a LOW share is BAD (red). `thresholds.good`/`thresholds.warn` default 85/60.
+export function getCacheEffectColor(percent, colors, thresholds) {
+    const good = thresholds?.good ?? 85;
+    const warn = thresholds?.warn ?? 60;
+    if (percent >= good)
+        return resolveAnsi(colors?.context, BRIGHT_GREEN);
+    if (percent >= warn)
+        return resolveAnsi(colors?.warning, YELLOW);
+    return resolveAnsi(colors?.critical, RED);
+}
+export function cacheEffectBar(percent, width = 10, colors, thresholds) {
+    const safeWidth = Number.isFinite(width) ? Math.max(0, Math.round(width)) : 0;
+    const safePercent = Number.isFinite(percent) ? Math.min(100, Math.max(0, percent)) : 0;
+    const filled = Math.round((safePercent / 100) * safeWidth);
+    const empty = safeWidth - filled;
+    const color = getCacheEffectColor(safePercent, colors, thresholds);
+    const filledChar = colors?.barFilled ?? '█';
+    const emptyChar = colors?.barEmpty ?? '░';
+    return `${color}${filledChar.repeat(filled)}${DIM}${emptyChar.repeat(empty)}${RESET}`;
+}
 //# sourceMappingURL=colors.js.map

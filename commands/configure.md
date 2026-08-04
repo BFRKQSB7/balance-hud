@@ -99,6 +99,7 @@ Save as `language: "en"` or `language: "zh-Hans"`.
   - "Prompt cache" - cache TTL countdown
   - "Claude Code version" - the running CC version
   - "Compaction count" - Compactions: 2 after /compact or auto-compaction
+  - "Cache Effect" - ██ 91% session cache hit share
   - "Advisor model" - Advisor: Opus 4.7 (when /advisor is configured)
 
 ### Q5: Turn On (based on chosen preset)
@@ -147,6 +148,7 @@ If user chooses "Enter custom text", use AskUserQuestion to get their text. Save
   - "Prompt cache" - cache TTL countdown
   - "Claude Code version" - the running CC version
   - "Compaction count" - Compactions: 2 after /compact or auto-compaction
+  - "Cache Effect" - ██ 91% session cache hit share
   - "Advisor model" - Advisor: Opus 4.7 (when /advisor is configured)
   - "Usage bar style" - ██░░ 25% visual bar (only if usageBarEnabled is true)
   - "Usage reset label" - show or hide the `resets in` prefix
@@ -180,6 +182,7 @@ Info items (Counts, Tokens, Usage, Speed, Duration) can be turned off via "Reset
   - "Prompt cache" - cache TTL countdown
   - "Claude Code version" - the running CC version
   - "Compaction count" - Compactions: 2 after /compact or auto-compaction
+  - "Cache Effect" - ██ 91% session cache hit share
   - "Advisor model" - Advisor: Opus 4.7 (when /advisor is configured)
 
 ### Q3: Git Style (only if Git is currently enabled)
@@ -310,6 +313,7 @@ If user chooses "Remove", set `display.customLine` to `""` in config.
 | Session start date | `display.showSessionStartDate` |
 | Last response time | `display.showLastResponseAt` |
 | Compaction count | `display.showCompactions` |
+| Cache Effect | `display.showCacheEffect` |
 | Reasoning level | `display.showEffortLevel` |
 | Output style | `display.showOutputStyle` |
 | Memory usage | `display.showMemoryUsage` |

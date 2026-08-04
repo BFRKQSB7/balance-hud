@@ -1,12 +1,14 @@
-# Balance HUD v2.1.2
+# Balance HUD v2.2.0 (预览版)
 
 > Claude Code 全功能插件 — 实时 HUD 状态栏 + API 余额监控
 >
 > **基于 [claude-hud](https://github.com/jarrodwatts/claude-hud) by [Jarrod Watts](https://github.com/jarrodwatts) (MIT) 开发**
 
-![](https://img.shields.io/badge/version-2.1.2-blue)
+![](https://img.shields.io/badge/version-2.2.0-blue)
 ![](https://img.shields.io/badge/license-MIT-green)
-![](https://img.shields.io/badge/based%20on-claude--hud%20v0.3.0-orange)
+![](https://img.shields.io/badge/based%20on-claude--hud%20v0.6.0-orange)
+
+> ⚠️ **预览版声明**：本版本为预览发布。插件注册后的斜杠命令（`/balance-hud:setup` / `:configure` / `:debug` / `:language`）**尚未完成实测**。若命令不可用，请先按「方式二」注册插件（含正斜杠路径），并反馈问题。
 
 Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud** (API 余额实时监控) 整合为一个独立运行的插件。
 
@@ -14,15 +16,19 @@ Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud
 
 ## 功能
 
-### 🖥️ HUD 状态栏 (来自 claude-hud v0.3.0)
-- **上下文健康度** — 实时上下文使用率进度条，绿/黄/红三级预警
+### 🖥️ HUD 状态栏 (来自 claude-hud v0.6.0 + balance-hud 增强)
+- **上下文健康度** — 实时上下文使用率进度条，绿/黄/红三级预警；可显示窗口大小 `76% (152k/1M)` (`display.contextValue: "both"`)
+- **推理力度** — 模型行显示当前 reasoning effort `◑ high` (`display.showEffortLevel`)
+- **缓存效果** — 会话缓存命中占比进度条，高命中=绿、低命中=红 (`display.showCacheEffect`)
 - **用量监控** — 5小时/7天用量限制显示，含重置倒计时
 - **工具活动追踪** — 当前运行的 Tools (Edit/Read/Grep 等)，完成计数
 - **Agent 状态** — 子 Agent 运行状态、模型、描述、耗时
 - **Todo 进度** — 任务列表完成进度显示
 - **Git 状态** — 分支名、脏状态、ahead/behind 提交数
 - **会话信息** — 会话时长、配置计数 (CLAUDE.md, rules, MCP, hooks)
-- **多语言** — 英文 / 中文 标签切换
+- **首行重排** — `projectLineOrder` 自定义首行各段顺序（model/project/sessionName/…），展开式首行生效
+- **完整路径** — `pathLevels: "full"` 显示完整工作目录（Windows/UNC/POSIX 均兼容）
+- **多语言** — 英文 / 简体中文 / 繁体中文 切换（`/balance-hud:language`）
 - **高度可配** — 布局、颜色、元素排序、合并行等全部可自定义
 
 ### 💰 API 余额监控 (来自 balance-hud v1.1.3, 仅 DeepSeek)
@@ -47,17 +53,19 @@ Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud
 
 ### 方式二：手动解压安装
 
-从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.1.2.zip`：
+> ⚠️ **必须注册插件**：仅解压 + 配置 statusLine 只能显示 HUD，**斜杠命令（`/balance-hud:*`）不会出现**。要让命令生效，必须在 Claude Code 里把本地插件注册进插件系统（见步骤 2）。
+
+从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.2.0.zip`：
 
 ```bash
 # macOS / Linux
-unzip "balance-hud-v2.1.2.zip" -d ~/.claude/plugins/
+unzip "balance-hud-v2.2.0.zip" -d ~/.claude/plugins/
 
 # Windows (PowerShell)
-Expand-Archive "balance-hud-v2.1.2.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
+Expand-Archive "balance-hud-v2.2.0.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
 ```
 
-然后在 `~/.claude/settings.json` 中配置：
+**步骤 1**：在 `~/.claude/settings.json` 中配置 statusLine（HUD 显示）：
 
 ```json
 {
@@ -68,7 +76,17 @@ Expand-Archive "balance-hud-v2.1.2.zip" -DestinationPath "$env:USERPROFILE\.clau
 }
 ```
 
-最后运行 `/balance-hud:setup` 验证配置。
+**步骤 2**：注册插件（**斜杠命令必需**）。在 Claude Code 输入框运行：
+
+```
+/plugin marketplace add C:/Users/NYRO/.claude/plugins/balance-hud
+/plugin install balance-hud
+```
+
+- 路径**必须用正斜杠**（反斜杠会被转义导致 marketplace 找不到）。
+- 若提示输入 marketplace 名称，填 `balance-hud-local`。
+- 完成后**完全重启 Claude Code**，输入 `/` 应能看到 `balance-hud:setup / configure / debug / language`。
+- 该注册会**复制**插件到 `~/.claude/plugins/cache/` 并登记命令；不会改动你的 `statusLine`。
 
 ### 方式三：交互式设置命令
 
@@ -182,7 +200,7 @@ SessionStart 钩子 (Claude Code 启动)
 | 变量 | 说明 |
 |------|------|
 | `DEEPSEEK_API_KEY` | DeepSeek API Key (优先级最高) |
-| `ANTHROPIC_AUTH_TOKEN` | DeepSeek 回退 Key — 仅当 `ANTHROPIC_BASE_URL` 指向 DeepSeek 时使用；第三方代理/中转 (如 ccswitch) 不会用它查余额 |
+| `ANTHROPIC_AUTH_TOKEN` | DeepSeek 回退 Key (Claude Code 自带) |
 | `OPENAI_API_KEY` | OpenAI API Key |
 | `BALANCE_HUD_DISABLE` | 设为 1 禁用 HUD |
 | `CLAUDE_HUD_DISABLE` | 兼容旧版禁用变量 |
@@ -214,16 +232,12 @@ plugins/balance-hud/
 │   ├── utils/                   # 工具函数
 │   └── ...
 ├── scripts/
-│   ├── auto_refresh.mjs         # 余额刷新守护进程 (15s 轮询 + PID 锁 + --warn + 孤儿自终止)
+│   ├── auto_refresh.mjs         # 余额刷新守护进程 (15s 轮询 + PID 锁 + --warn)
 │   ├── hud_balance.mjs          # 余额 HUD 渲染 (ANSI 彩色, 独立可用)
-│   ├── balance_snapshot.mjs     # 余额快照生成器
-│   ├── fix_statusline.mjs       # statusLine 看门狗 (ccswitch 重写 settings.json 时自动补回)
-│   └── hud_debug.mjs            # 诊断脚本 (/balance-hud:debug 后端)
-├── statusline.mjs               # 可移植 statusLine 包装器 (设 COLUMNS + 定位插件)
+│   └── balance_snapshot.mjs     # 余额快照生成器
 ├── commands/
 │   ├── setup.md                 # /balance-hud:setup 安装配置命令
-│   ├── configure.md             # /balance-hud:configure 交互式配置命令
-│   └── debug.md                 # /balance-hud:debug 诊断命令
+│   └── configure.md             # /balance-hud:configure 交互式配置命令
 ├── config.json                  # 默认 HUD 配置
 ├── session_state.json           # 余额运行时缓存
 ├── balance_usage.json           # HUD 余额快照 (自动生成)
@@ -237,7 +251,8 @@ plugins/balance-hud/
 |------|------|
 | `/balance-hud:setup` | 自动检测环境，配置 statusLine |
 | `/balance-hud:configure` | 交互式 HUD 配置 (布局、功能开关、颜色等) |
-| `/balance-hud:debug` | 诊断 HUD — provider 分类、statusLine 接线、余额快照、daemon/看门狗、模拟渲染 |
+| `/balance-hud:language` | 一键切换 HUD 标签语言 (英文 / 简体中文 / 繁体中文) |
+| `/balance-hud:debug` | 诊断 HUD 接线、余额守护进程、模型解析、模拟渲染 |
 
 ## 颜色说明 (余额行)
 
@@ -251,14 +266,17 @@ plugins/balance-hud/
 
 ## 变更日志
 
-### v2.1.2
-- **新增**：`/balance-hud:debug` 诊断命令 — 自动检查 provider 分类、statusLine 接线、余额快照、daemon/看门狗状态，并模拟渲染定位接线 bug
-- **修复**：切换 provider 后残留 DeepSeek 余额行 — ① HUD 读余额快照前验证当前环境是否真是 DeepSeek (`isDeepSeekEnv`) ② 余额 daemon 检测父进程 (Claude Code) 退出后自动终止，不再跨会话残留轮询 ③ 余额 API fetch 加 8s 超时，防悬空请求累积
-- **修复**：第三方中转 (如 OpenCode Go) 下模型只显示角色名 (`claude-sonnet-4-6`) — 现按 `ANTHROPIC_DEFAULT_<ROLE>_MODEL_NAME` env 重映射显示真实模型 (`deepseek-v4-flash`)
-- **新增**：`statusline.mjs` 可移植包装器 + `fix_statusline.mjs` 看门狗 — ccswitch 等工具重写 `settings.json` 丢 `statusLine` 时自动补回 (Windows 启动项 `balance-hud-statusline.vbs`)
-
-### v2.1.1
-- **修复**：余额守护进程不再把任意 `ANTHROPIC_AUTH_TOKEN` 当 DeepSeek Key 直连官网余额接口 — 仅当 `ANTHROPIC_BASE_URL` 指向 DeepSeek 时才回退使用；第三方代理/中转会话 (如 ccswitch) 不再触发 `api.deepseek.com/user/balance` 查询，余额行干净隐藏。显式设置 `DEEPSEEK_API_KEY` 时不受影响
+### v2.2.0 (预览版)
+- **新增**：上下文窗口大小显示 — `display.contextValue: "both"` → `76% (152k/1M)`
+- **新增**：推理力度显示 — `display.showEffortLevel` → 模型行 `◑ high`（跟随上游 v0.6.0：移除 ps 父进程回退，仅从 stdin 读取）
+- **新增**：缓存效果行 — `display.showCacheEffect` → 会话缓存命中占比，高命中=绿 (`Cache Effect ██████████ 98%`)
+- **新增**：繁体中文 — `language: "zh-Hant" | "zh-TW"`（与英文/简体中文并列）
+- **新增**：`pathLevels: "full"` — 显示完整工作目录（Windows/UNC/POSIX 兼容，移植上游 v0.6.0 `formatProjectPath`）
+- **新增**：`projectLineOrder` — 首行各段重排（model/project/advisor/sessionName/version/extra/duration/cost/speed），展开式首行生效
+- **新增**：语言切换命令 `/balance-hud:language`；`/balance-hud:debug` 命令收录进 README
+- **修复**：i18n 类型补 `label.cacheEffect` key
+- **文档**：手动安装必须注册插件（`/plugin marketplace add` + `/plugin install`）才能使用斜杠命令
+- ⚠️ **预览说明**：插件注册后的斜杠命令尚未实测
 
 ### v2.1.0
 - **新增**：HUD 状态栏与 API 无关 — 任意 API (DeepSeek / Anthropic 官方 / OpenAI 兼容) 下均正常显示，非 DeepSeek 时余额行整行隐藏 (claude-hud 外观)
@@ -289,12 +307,12 @@ plugins/balance-hud/
 
 | 项目 | 作者 | 许可证 | 说明 |
 |------|------|--------|------|
-| [claude-hud](https://github.com/jarrodwatts/claude-hud) | Jarrod Watts | MIT | 全功能 HUD 渲染引擎 (v0.3.0) |
+| [claude-hud](https://github.com/jarrodwatts/claude-hud) | Jarrod Watts | MIT | 全功能 HUD 渲染引擎 (v0.6.0) |
 | balance-hud | NYRO | MIT | API 余额监控 + 二次开发 |
 
 完整许可证文本见 [LICENSE](LICENSE)。第三方代码清单见 [NOTICE.md](NOTICE.md)。
 
 ## 致谢
 
-- **[claude-hud](https://github.com/jarrodwatts/claude-hud)** by [Jarrod Watts](https://github.com/jarrodwatts) — 全功能终端 HUD 状态栏引擎。本项目的 HUD 渲染管线（`dist/render/`、`dist/config.js`、国际化等）基于 claude-hud v0.3.0 开发。
+- **[claude-hud](https://github.com/jarrodwatts/claude-hud)** by [Jarrod Watts](https://github.com/jarrodwatts) — 全功能终端 HUD 状态栏引擎。本项目的 HUD 渲染管线（`dist/render/`、`dist/config.js`、国际化等）基于 claude-hud v0.6.0 开发。
 - **[Claude Code](https://claude.ai/code)** by Anthropic — 插件平台与 statusLine API

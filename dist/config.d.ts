@@ -15,6 +15,7 @@ export type ModelFormatMode = 'full' | 'compact' | 'short';
 export type TimeFormatMode = 'relative' | 'absolute' | 'both' | 'elapsed' | 'elapsedAndAbsolute';
 export type CustomLinePosition = 'first' | 'last';
 export type HudElement = 'project' | 'addedDirs' | 'context' | 'usage' | 'promptCache' | 'memory' | 'environment' | 'tools' | 'skills' | 'mcp' | 'agents' | 'todos' | 'sessionTime';
+export type FirstLineSegment = 'model' | 'project' | 'advisor' | 'sessionName' | 'version' | 'extra' | 'duration' | 'cost' | 'speed';
 export type AddedDirsLayout = 'inline' | 'line';
 export type HudColorName = 'dim' | 'red' | 'green' | 'yellow' | 'magenta' | 'cyan' | 'brightBlue' | 'brightMagenta';
 /** A color value: named preset, 256-color index (0-255), or hex string (#rrggbb). */
@@ -36,14 +37,16 @@ export interface HudColorOverrides {
 }
 export declare const DEFAULT_ELEMENT_ORDER: HudElement[];
 export declare const DEFAULT_MERGE_GROUPS: HudElement[][];
+export declare const DEFAULT_PROJECT_LINE_ORDER: FirstLineSegment[];
 export interface HudConfig {
     language: Language;
     lineLayout: LineLayoutType;
     showSeparators: boolean;
-    pathLevels: 1 | 2 | 3;
+    pathLevels: 1 | 2 | 3 | 'full';
     maxWidth: number | null;
     forceMaxWidth: boolean;
     elementOrder: HudElement[];
+    projectLineOrder: FirstLineSegment[];
     gitStatus: {
         enabled: boolean;
         showDirty: boolean;
@@ -88,6 +91,7 @@ export interface HudConfig {
         showSessionStartDate: boolean;
         showLastResponseAt: boolean;
         showCompactions: boolean;
+        showCacheEffect: boolean;
         mergeGroups: HudElement[][];
         autocompactBuffer: AutocompactBufferMode;
         contextWarningThreshold: number;
