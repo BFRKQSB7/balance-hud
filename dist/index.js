@@ -12,9 +12,11 @@ import { applyContextWindowFallback } from "./context-cache.js";
 import { getUsageFromExternalSnapshot, writeExternalUsageSnapshot } from "./external-usage.js";
 import { setLanguage, t } from "./i18n/index.js";
 export { getUsageFromExternalSnapshot, writeExternalUsageSnapshot } from "./external-usage.js";
+import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { realpathSync, existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
+import { getHudPluginDir } from "./claude-config-dir.js";
 /**
  * Returns true when the HUD is disabled for this invocation via the
  * CLAUDE_HUD_DISABLE environment variable. Any non-blank value other than an
@@ -197,11 +199,11 @@ function tryLoadAutoSnapshot(config, deps) {
         if (config.display.externalUsagePath) return null;
         // Never surface a balance snapshot in a non-DeepSeek session.
         if (!isDeepSeekEnv()) return null;
-        // Resolve plugin root: dist/index.js → ../balance_usage.json
-        const distDir = dirname(fileURLToPath(import.meta.url));
-        const pluginRoot = join(distDir, '..');
+        // Data files live in the stable plugin dir (~/.claude/plugins/balance-hud),
+        // matching getConfigPath(), so the snapshot stays consistent regardless of
+        // which copy (direct install vs marketplace cache) this engine runs from.
         return deps.getUsageFromExternalSnapshot(
-            { ...config, display: { ...config.display, externalUsagePath: join(pluginRoot, 'balance_usage.json') } },
+            { ...config, display: { ...config.display, externalUsagePath: join(getHudPluginDir(os.homedir()), 'balance_usage.json') } },
             deps.now()
         );
     } catch {

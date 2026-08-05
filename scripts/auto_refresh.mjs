@@ -15,13 +15,15 @@
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import os from 'node:os';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PLUGIN_DIR = resolve(__dirname, '..');
-const STATE_FILE = resolve(PLUGIN_DIR, 'session_state.json');
-const PID_FILE = resolve(PLUGIN_DIR, '.auto_refresh_pid');
+// Data files live in the stable plugin dir (~/.claude/plugins/balance-hud),
+// matching getConfigPath(), so the daemon and the HUD engine always read/write
+// the same snapshot regardless of which copy they run from.
+const DATA_DIR = path.join(process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude'), 'plugins', 'balance-hud');
+const STATE_FILE = path.join(DATA_DIR, 'session_state.json');
+const PID_FILE = path.join(DATA_DIR, '.auto_refresh_pid');
 const args = process.argv.slice(2);
 const INTERVAL_MS = (parseInt(args.find(a => !a.startsWith('--')), 10) || 15) * 1000;
 
@@ -36,7 +38,7 @@ if (warnIdx !== -1 && args[warnIdx + 1] != null) {
   let state = {};
   try { state = JSON.parse(readFileSync(STATE_FILE, 'utf-8')); } catch {}
   state._warn_threshold = warnVal;
-  mkdirSync(resolve(__dirname, '..'), { recursive: true });
+  mkdirSync(DATA_DIR, { recursive: true });
   writeFileSync(STATE_FILE, JSON.stringify(state, null, 2), 'utf-8');
   process.stderr.write(`✅ 低余额预警阈值已设为 ¥${warnVal.toFixed(2)}\n`);
   process.stderr.write(`   余额 ≤ ¥${warnVal.toFixed(2)} 时 HUD 进度条变黄 + 充值提醒\n`);
@@ -142,7 +144,7 @@ function resetSessionState() {
       }
     }
     state._session_started_at = now();
-    mkdirSync(resolve(__dirname, '..'), { recursive: true });
+    mkdirSync(DATA_DIR, { recursive: true });
     writeFileSync(STATE_FILE, JSON.stringify(state, null, 2), 'utf-8');
   } catch { /* ignore */ }
 }
@@ -160,14 +162,14 @@ function refreshState(provider, balance) {
     s.last_balance = balance;
     s.last_check = now();
     // No history push — this is cache-only refresh
-    mkdirSync(resolve(__dirname, '..'), { recursive: true });
+    mkdirSync(DATA_DIR, { recursive: true });
     writeFileSync(STATE_FILE, JSON.stringify(state, null, 2), 'utf-8');
   } catch { /* ignore */ }
 }
 
 // ── Empty snapshot (non-DeepSeek session) ──────────────────
 function writeEmptyBalanceSnapshot() {
-  const SNAPSHOT_FILE = resolve(PLUGIN_DIR, 'balance_usage.json');
+  const SNAPSHOT_FILE = path.join(DATA_DIR, 'balance_usage.json');
   try {
     const snapshot = {
       updated_at: new Date().toISOString(),
@@ -209,7 +211,7 @@ function writeBalanceSnapshot() {
   // ANSI colors match hud_balance.mjs v1.1.3:
   //   BLUE label, BRIGHT_GREEN balance (YELLOW if low), DIM separators,
   //   RED consumed, BRIGHT_MAGENTA pct, ORANGE time.
-  const SNAPSHOT_FILE = resolve(PLUGIN_DIR, 'balance_usage.json');
+  const SNAPSHOT_FILE = path.join(DATA_DIR, 'balance_usage.json');
   const LABELS = { deepseek: 'DeepSeek', openai: 'OpenAI', anthropic: 'Anthropic' };
   const STALE_MS = 30 * 60 * 1000;
   // ANSI constants matching v1.1.3 hud_balance.mjs

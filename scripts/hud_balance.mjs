@@ -14,10 +14,11 @@
  */
 
 import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import os from 'node:os';
 
-const STATE_FILE = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'session_state.json');
+const DATA_DIR = path.join(process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude'), 'plugins', 'balance-hud');
+const STATE_FILE = path.join(DATA_DIR, 'session_state.json');
 
 // ANSI color constants
 const BRIGHT_GREEN  = '\x1b[92m';        // Balance text — normal (bright green)

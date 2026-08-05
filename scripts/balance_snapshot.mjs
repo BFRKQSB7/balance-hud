@@ -16,13 +16,12 @@
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import os from 'node:os';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PLUGIN_DIR = resolve(__dirname, '..');
-const STATE_FILE = resolve(PLUGIN_DIR, 'session_state.json');
-const SNAPSHOT_FILE = resolve(PLUGIN_DIR, 'balance_usage.json');
+const DATA_DIR = path.join(process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude'), 'plugins', 'balance-hud');
+const STATE_FILE = path.join(DATA_DIR, 'session_state.json');
+const SNAPSHOT_FILE = path.join(DATA_DIR, 'balance_usage.json');
 
 const LABELS = { deepseek: 'DeepSeek', openai: 'OpenAI', anthropic: 'Anthropic' };
 const STALE_MS = 30 * 60 * 1000;
@@ -77,7 +76,7 @@ function writeSnapshot(balanceLabel) {
   };
 
   try {
-    mkdirSync(PLUGIN_DIR, { recursive: true });
+    mkdirSync(DATA_DIR, { recursive: true });
     writeFileSync(SNAPSHOT_FILE, JSON.stringify(snapshot, null, 2), 'utf-8');
   } catch { /* ignore */ }
 }

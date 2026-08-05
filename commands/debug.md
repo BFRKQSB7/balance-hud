@@ -11,7 +11,7 @@ statusline refresh, then fix whatever it flags.
 ## Step 1: Run diagnostics
 
 ```bash
-node "C:/Users/NYRO/.claude/plugins/balance-hud/scripts/hud_debug.mjs"
+node "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/balance-hud/scripts/hud_debug.mjs"
 ```
 
 The report covers:
@@ -36,7 +36,7 @@ Fix each reported problem in order of impact:
    ccswitch) and the statusline was dropped, so Claude Code never invokes the
    HUD. Run the guard once:
    ```bash
-   node "C:/Users/NYRO/.claude/plugins/balance-hud/scripts/fix_statusline.mjs"
+   node "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/balance-hud/scripts/fix_statusline.mjs"
    ```
    If the watchdog (`fix_statusline --watch`) is not running either, it will
    recur. Start it (Windows startup item is at
@@ -74,7 +74,7 @@ Re-run Step 1 — the report should have no `✗` lines (or only expected ones f
 the current provider). For a quick check use `--short`:
 
 ```bash
-node "C:/Users/NYRO/.claude/plugins/balance-hud/scripts/hud_debug.mjs" --short
+node "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/balance-hud/scripts/hud_debug.mjs" --short
 ```
 
 Expected when healthy on a third-party relay:

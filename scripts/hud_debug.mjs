@@ -19,10 +19,11 @@ import { fileURLToPath } from 'node:url';
 
 const PLUGIN_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const CLAUDE_DIR = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
+const DATA_DIR = path.join(CLAUDE_DIR, 'plugins', 'balance-hud');
 const SETTINGS_PATH = path.join(CLAUDE_DIR, 'settings.json');
-const CONFIG_PATH = path.join(PLUGIN_ROOT, 'config.json');
-const SNAPSHOT_PATH = path.join(PLUGIN_ROOT, 'balance_usage.json');
-const PID_FILE = path.join(PLUGIN_ROOT, '.auto_refresh_pid');
+const CONFIG_PATH = path.join(DATA_DIR, 'config.json');
+const SNAPSHOT_PATH = path.join(DATA_DIR, 'balance_usage.json');
+const PID_FILE = path.join(DATA_DIR, '.auto_refresh_pid');
 const SHORT = process.argv.includes('--short');
 
 const R = [];
