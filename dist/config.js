@@ -111,7 +111,7 @@ export const DEFAULT_CONFIG = {
         project: 'yellow',
         git: 'magenta',
         gitBranch: 'cyan',
-        label: 'dim',
+        label: 'white',
         custom: 208,
         barFilled: '█',
         barEmpty: '░',
@@ -156,7 +156,8 @@ function validateCustomLinePosition(value) {
     return value === 'first' || value === 'last';
 }
 function validateColorName(value) {
-    return value === 'dim'
+    return value === 'white'
+        || value === 'dim'
         || value === 'red'
         || value === 'green'
         || value === 'yellow'

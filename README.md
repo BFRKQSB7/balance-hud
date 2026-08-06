@@ -1,10 +1,10 @@
-# Balance HUD v2.2.1
+# Balance HUD v2.2.2
 
 > Claude Code 全功能插件 — 实时 HUD 状态栏 + API 余额监控
 >
 > **基于 [claude-hud](https://github.com/jarrodwatts/claude-hud) by [Jarrod Watts](https://github.com/jarrodwatts) (MIT) 开发**
 
-![](https://img.shields.io/badge/version-2.2.1-blue)
+![](https://img.shields.io/badge/version-2.2.2-blue)
 ![](https://img.shields.io/badge/license-MIT-green)
 ![](https://img.shields.io/badge/based%20on-claude--hud%20v0.6.0-orange)
 
@@ -55,14 +55,14 @@ Balance HUD 将 **claude-hud** (全功能终端 HUD 状态栏) 与 **balance-hud
 
 > ⚠️ **必须注册插件**：仅解压 + 配置 statusLine 只能显示 HUD，**斜杠命令（`/balance-hud:*`）不会出现**。要让命令生效，必须在 Claude Code 里把本地插件注册进插件系统（见步骤 2）。
 
-从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.2.1.zip`：
+从 [Releases](https://github.com/BFRKQSB7/balance-hud/releases) 下载 `balance-hud-v2.2.2.zip`：
 
 ```bash
 # macOS / Linux
-unzip "balance-hud-v2.2.1.zip" -d ~/.claude/plugins/
+unzip "balance-hud-v2.2.2.zip" -d ~/.claude/plugins/
 
 # Windows (PowerShell)
-Expand-Archive "balance-hud-v2.2.1.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
+Expand-Archive "balance-hud-v2.2.2.zip" -DestinationPath "$env:USERPROFILE\.claude\plugins\"
 ```
 
 **步骤 1**：在 `~/.claude/settings.json` 中配置 statusLine（HUD 显示）：
@@ -265,6 +265,10 @@ plugins/balance-hud/
 | `12:34:56` | 橙色 | 刷新时间 |
 
 ## 变更日志
+
+### v2.2.2
+- **优化**：标签颜色默认从 `dim`（灰色）改为 `white`（亮白）— 黑色终端下时长/速度/用量/token 等标签更清晰可读
+- **新增**：颜色值支持 `white`（`\x1b[97m`），`colors.label` 可配置 `"white"`，校验器同步接受
 
 ### v2.2.1
 - **修复**：数据文件路径分叉 — `balance_usage.json` / `session_state.json` / `.auto_refresh_pid` 统一到稳定目录 `~/.claude/plugins/balance-hud/`（与 `config.json` 一致）。此前 marketplace 安装后引擎/守护进程跑 cache 副本、诊断与 `--warn` 脚本跑直接副本，读写两份不同数据，导致余额阈值设置和诊断结果与 HUD 实际显示失配

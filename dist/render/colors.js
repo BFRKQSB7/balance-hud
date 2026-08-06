@@ -8,6 +8,7 @@ const CYAN = '\x1b[36m';
 export const BRIGHT_BLUE = '\x1b[94m';
 export const BRIGHT_GREEN = '\x1b[92m';
 const BRIGHT_MAGENTA = '\x1b[95m';
+const BRIGHT_WHITE = '\x1b[97m';
 const CLAUDE_ORANGE = '\x1b[38;5;208m';
 const ANSI_BY_NAME = {
     dim: DIM,
@@ -19,6 +20,7 @@ const ANSI_BY_NAME = {
     brightBlue: BRIGHT_BLUE,
     brightGreen: BRIGHT_GREEN,
     brightMagenta: BRIGHT_MAGENTA,
+    white: BRIGHT_WHITE,
 };
 /** Convert a hex color string (#rrggbb) to a truecolor ANSI escape sequence. */
 function hexToAnsi(hex) {

@@ -17,7 +17,7 @@ export type CustomLinePosition = 'first' | 'last';
 export type HudElement = 'project' | 'addedDirs' | 'context' | 'usage' | 'promptCache' | 'memory' | 'environment' | 'tools' | 'skills' | 'mcp' | 'agents' | 'todos' | 'sessionTime';
 export type FirstLineSegment = 'model' | 'project' | 'advisor' | 'sessionName' | 'version' | 'extra' | 'duration' | 'cost' | 'speed';
 export type AddedDirsLayout = 'inline' | 'line';
-export type HudColorName = 'dim' | 'red' | 'green' | 'yellow' | 'magenta' | 'cyan' | 'brightBlue' | 'brightMagenta';
+export type HudColorName = 'dim' | 'white' | 'red' | 'green' | 'yellow' | 'magenta' | 'cyan' | 'brightBlue' | 'brightGreen' | 'brightMagenta';
 /** A color value: named preset, 256-color index (0-255), or hex string (#rrggbb). */
 export type HudColorValue = HudColorName | number | string;
 export interface HudColorOverrides {

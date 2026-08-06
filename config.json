@@ -79,7 +79,7 @@
     "project": "yellow",
     "git": "magenta",
     "gitBranch": "cyan",
-    "label": "dim",
+    "label": "white",
     "custom": 208,
     "barFilled": "█",
     "barEmpty": "░"
