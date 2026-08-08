@@ -79,7 +79,7 @@ Expand-Archive "balance-hud-v2.2.2.zip" -DestinationPath "$env:USERPROFILE\.clau
 **步骤 2**：注册插件（**斜杠命令必需**）。在 Claude Code 输入框运行：
 
 ```
-/plugin marketplace add C:/Users/NYRO/.claude/plugins/balance-hud
+/plugin marketplace add ~/.claude/plugins/balance-hud
 /plugin install balance-hud
 ```
 
@@ -272,7 +272,7 @@ plugins/balance-hud/
 
 ### v2.2.1
 - **修复**：数据文件路径分叉 — `balance_usage.json` / `session_state.json` / `.auto_refresh_pid` 统一到稳定目录 `~/.claude/plugins/balance-hud/`（与 `config.json` 一致）。此前 marketplace 安装后引擎/守护进程跑 cache 副本、诊断与 `--warn` 脚本跑直接副本，读写两份不同数据，导致余额阈值设置和诊断结果与 HUD 实际显示失配
-- **修复**：`commands/debug.md` 硬编码 `C:/Users/NYRO/...` 绝对路径 → 可移植的 `${CLAUDE_CONFIG_DIR:-$HOME/.claude}` 形式
+- **修复**：`commands/debug.md` 硬编码的绝对路径 → 可移植的 `${CLAUDE_CONFIG_DIR:-$HOME/.claude}` 形式
 - **测试**：四个斜杠命令（`/balance-hud:setup` / `:configure` / `:debug` / `:language`）完成实测
 
 ### v2.2.0 (预览版)
