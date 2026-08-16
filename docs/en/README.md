@@ -161,7 +161,7 @@ Built on open-source projects under the MIT License:
 | Project | Author | License | Description |
 |---------|--------|---------|-------------|
 | [claude-hud](https://github.com/jarrodwatts/claude-hud) | Jarrod Watts | MIT | Full HUD rendering engine (v0.6.0) |
-| balance-hud | NYRO | MIT | API balance monitoring + derivative work |
+| balance-hud | BFRKQSB7 | MIT | API balance monitoring + derivative work |
 
 Full license text in [LICENSE](LICENSE). Third-party code list in [NOTICE.md](NOTICE.md).
 

@@ -319,7 +319,7 @@ plugins/balance-hud/
 | 项目 | 作者 | 许可证 | 说明 |
 |------|------|--------|------|
 | [claude-hud](https://github.com/jarrodwatts/claude-hud) | Jarrod Watts | MIT | 全功能 HUD 渲染引擎 (v0.6.0) |
-| balance-hud | NYRO | MIT | API 余额监控 + 二次开发 |
+| balance-hud | BFRKQSB7 | MIT | API 余额监控 + 二次开发 |
 
 完整许可证文本见 [LICENSE](LICENSE)。第三方代码清单见 [NOTICE.md](NOTICE.md)。
 
